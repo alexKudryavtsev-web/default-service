@@ -1,17 +1,17 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/alexKudryavtsev-web/default-service/config"
+	"github.com/alexKudryavtsev-web/default-service/internal/app"
 )
 
 func main() {
-	cnf, err := config.NewConfig()
+	cfg, err := config.NewConfig()
 	if err != nil {
 		log.Fatalf("can't init config: %s", err)
 	}
 
-	fmt.Println(cnf)
+	app.Run(cfg)
 }
