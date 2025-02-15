@@ -1,0 +1,28 @@
+services:
+  postgres:
+    container_name: postgres
+    image: postgres
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: "user"
+      POSTGRES_PASSWORD: "pass"
+      POSTGRES_DB: "postgres"
+    ports:
+      - 8001:5432
+
+  app:
+    build: .
+    container_name: app
+    image: app
+    environment:
+      PG_URL: "postgres://user:pass@postgres:8001/postgres"
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+
+volumes:
+  pg-data:
