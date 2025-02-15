@@ -4,82 +4,101 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/rs/zerolog"
 )
 
 type Interface interface {
- Debug(message interface{}, args ...interface{})
- Info(message string, args ...interface{})
- Warn(message string, args ...interface{})
- Error(message interface{}, args ...interface{})
- Fatal(message interface{}, args ...interface{})
+	Debug(message interface{}, args ...interface{})
+	Info(message string, args ...interface{})
+	Warn(message string, args ...interface{})
+	Error(message interface{}, args ...interface{})
+	Fatal(message interface{}, args ...interface{})
 }
 
 type Logger struct {
- logger *zerolog.Logger
+	logger *zerolog.Logger
 }
 
 var _ Interface = (*Logger)(nil)
 
 func New(level string) (*Logger, error) {
- var l zerolog.Level
+	var l zerolog.Level
 
- switch strings.ToLower(level) {
- case "error":
-  l = zerolog.ErrorLevel
- case "warn":
-  l = zerolog.WarnLevel
- case "info":
-  l = zerolog.InfoLevel
- case "debug":
-  l = zerolog.DebugLevel
- default:
-  return nil, fmt.Errorf("invalid log level: %s", level)
- }
+	switch strings.ToLower(level) {
+	case "error":
+		l = zerolog.ErrorLevel
+	case "warn":
+		l = zerolog.WarnLevel
+	case "info":
+		l = zerolog.InfoLevel
+	case "debug":
+		l = zerolog.DebugLevel
+	default:
+		return nil, fmt.Errorf("invalid log level: %s", level)
+	}
 
- zerolog.SetGlobalLevel(l)
+	zerolog.SetGlobalLevel(l)
 
- skipFrameCount := 3
- logger := zerolog.New(os.Stdout).With().Timestamp().CallerWithSkipFrameCount(zerolog.CallerSkipFrameCount + skipFrameCount).Logger()
+	consoleWriter := zerolog.ConsoleWriter{
+		Out:        os.Stdout,
+		TimeFormat: time.RFC3339,
+		NoColor:    false,
+	}
 
- return &Logger{
-  logger: &logger,
- }, nil
+	skipFrameCount := 3
+	logger := zerolog.New(consoleWriter).With().Timestamp().CallerWithSkipFrameCount(zerolog.CallerSkipFrameCount + skipFrameCount).Logger()
+
+	return &Logger{
+		logger: &logger,
+	}, nil
 }
 
 func (l *Logger) Debug(message interface{}, args ...interface{}) {
- l.msg("debug", message, args...)
+	l.log("debug", message, args...)
 }
 
 func (l *Logger) Info(message string, args ...interface{}) {
- l.msg("info", message, args...)
+	l.log("info", message, args...)
 }
 
 func (l *Logger) Warn(message string, args ...interface{}) {
- l.msg("warn", message, args...)
+	l.log("warn", message, args...)
 }
 
 func (l *Logger) Error(message interface{}, args ...interface{}) {
- l.msg("error", message, args...)
+	l.log("error", message, args...)
 }
 
 func (l *Logger) Fatal(message interface{}, args ...interface{}) {
- l.msg("fatal", message, args...)
- os.Exit(1)
+	l.log("fatal", message, args...)
+	os.Exit(1)
 }
 
-func (l *Logger) log(message string, args ...interface{}) {
- l.logger.Info().Msgf(message, args...)
-}
+func (l *Logger) log(level string, message interface{}, args ...interface{}) {
+	var event *zerolog.Event
+	switch level {
+	case "debug":
+		event = l.logger.Debug()
+	case "info":
+		event = l.logger.Info()
+	case "warn":
+		event = l.logger.Warn()
+	case "error":
+		event = l.logger.Error()
+	case "fatal":
+		event = l.logger.Fatal()
+	default:
+		event = l.logger.Info()
+	}
 
-func (l *Logger) msg(level string, message interface{}, args ...interface{}) {
- switch msg := message.(type) {
- case error:
-  l.log(msg.Error(), args...)
- case string:
-  l.log(msg, args...)
- default:
-  l.log(fmt.Sprintf("%s message %v (type: %T) has unknown type", level, message, message), args...)
- }
+	switch msg := message.(type) {
+	case error:
+		event.Msgf(msg.Error(), args...)
+	case string:
+		event.Msgf(msg, args...)
+	default:
+		event.Msgf(fmt.Sprintf("level message %v (type: %T) has unknown type", message, message), args...)
+	}
 }
