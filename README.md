@@ -15,7 +15,9 @@
 1) `make help` - получить справку о командах
 2) `make compose-up-prod` - запустить сервис (для продакшена)
 3) `make compose-up-dev` - запустить только Postgres, RabbitMQ и т.п.
-4) `make run-app` - используется вместе с `make compose-up-dev`. Запускает само приложение. Для разработки
+4) `make run-app` - используется вместе с `make compose-up-dev`. Запускает само приложение (для разработки)
+5) `make install-deps` - установить инструменты (для разработки)
+6) `make migrate-create name="migration_name"` - создать миграцию
 
 Структура:
 

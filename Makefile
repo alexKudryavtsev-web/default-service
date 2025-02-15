@@ -24,5 +24,17 @@ run-app: ### DEVELOPMENT: Run app (after `make compose-up-dev`)
 remove-volume: ### UNIVERSAL: remove docker volume
 	docker volume rm defaultservice_pg-data
 
+migrate-create:  ### DEVELOPMENT: create new migration
+	./bin/migrate create -ext sql -dir migrations $(name)
+.PHONY: migrate-create
+
+migrate-up: ### UNIVERSAL: migration up
+	./bin/migrate -path migrations -database $(PG_URL) up
+.PHONY: migrate-up
+
+install-deps: ### DEVELOPMENT: install deps
+	GOBIN=$(LOCAL_BIN) go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+.PHONY: bin-deps
+
 build: ### UNIVERSAL: build the application
 	go build -tags migrate -o $(LOCAL_BIN)/app ./cmd/app
