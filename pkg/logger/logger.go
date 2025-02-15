@@ -2,6 +2,7 @@ package logger
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"strings"
 	"time"
@@ -23,7 +24,7 @@ type Logger struct {
 
 var _ Interface = (*Logger)(nil)
 
-func New(level string) (*Logger, error) {
+func New(level string, destination string) (*Logger, error) {
 	var l zerolog.Level
 
 	switch strings.ToLower(level) {
@@ -41,14 +42,28 @@ func New(level string) (*Logger, error) {
 
 	zerolog.SetGlobalLevel(l)
 
-	consoleWriter := zerolog.ConsoleWriter{
-		Out:        os.Stdout,
-		TimeFormat: time.RFC3339,
-		NoColor:    false,
+	var output io.Writer
+
+	switch strings.ToLower(destination) {
+	case "file":
+		logFile, err := os.OpenFile("app.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+		if err != nil {
+			return nil, fmt.Errorf("error opening log file: %w", err)
+		}
+		output = logFile
+	case "console":
+		consoleWriter := zerolog.ConsoleWriter{
+			Out:        os.Stdout,
+			TimeFormat: time.RFC3339,
+			NoColor:    false,
+		}
+		output = consoleWriter
+	default:
+		return nil, fmt.Errorf("invalid log destination: %s. Use 'file' or 'console'", destination)
 	}
 
 	skipFrameCount := 3
-	logger := zerolog.New(consoleWriter).With().Timestamp().CallerWithSkipFrameCount(zerolog.CallerSkipFrameCount + skipFrameCount).Logger()
+	logger := zerolog.New(output).With().Timestamp().CallerWithSkipFrameCount(zerolog.CallerSkipFrameCount + skipFrameCount).Logger()
 
 	return &Logger{
 		logger: &logger,

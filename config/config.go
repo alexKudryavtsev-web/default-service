@@ -2,23 +2,25 @@ package config
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
 type (
 	Config struct {
-		HTTP `yaml:"http"`
-		Log  `yaml:"logger"`
-		PG   `yaml:"postgres"`
+		HTTP HTTP `yaml:"http"`
+		Log  Log  `yaml:"logger"`
+		PG   PG   `yaml:"postgres"`
 	}
 
 	HTTP struct {
-		Port string `yaml:"http"`
+		Port string `yaml:"port"`
 	}
 
 	Log struct {
-		Level string `yaml:"level"`
+		Level       string `yaml:"level"`
+		Destination string `yaml:"destination" env:"LOG_DESTINATION"`		
 	}
 
 	PG struct {
@@ -40,5 +42,17 @@ func NewConfig() (*Config, error) {
 		return nil, fmt.Errorf("can't read env config: %w", err)
 	}
 
+	if err := validateDestination(cfg.Log.Destination); err != nil {
+		return nil, err
+	}
+
 	return cfg, nil
+}
+
+func validateDestination(destination string) error {
+	destination = strings.ToLower(destination)
+	if destination != "file" && destination != "console" {
+		return fmt.Errorf("invalid log destination: %s. Use 'file' or 'console'", destination)
+	}
+	return nil
 }

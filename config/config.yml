@@ -3,6 +3,7 @@ http:
 
 logger:
   level: 'debug'
+  destination: 'console'
 
 postgres:
   pool_max: 2

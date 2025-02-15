@@ -8,10 +8,9 @@ import (
 )
 
 func Run(cfg *config.Config) {
-	logger, err := logger.New("debug")
+	logger, err := logger.New(cfg.Log.Level, cfg.Log.Destination)
 	if err != nil {
 		log.Fatalf("can't init logger: %s", err)
 	}
-
-	logger.Info("Hello World!")
+	logger.Info("logger init")
 }
