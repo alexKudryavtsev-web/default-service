@@ -36,12 +36,21 @@ generate-docs: ### DEVELOPMENT: generate API docs
 	./bin/swag init -g cmd/app/main.go
 .PHONY: generate-docs
 
+mock: ### DEVELOPMENT: run mockgen
+	mockgen -source ./internal/usecase/interfaces.go -package usecase_test > ./internal/usecase/mocks_test.go
+.PHONY: mock
+
+test: ### UNIVERSAL: run test
+	go test -v -cover -race ./internal/...
+.PHONY: test
+
 install-deps: ### DEVELOPMENT: install deps
 	GOBIN=$(LOCAL_BIN) go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 	GOBIN=$(LOCAL_BIN) go install github.com/swaggo/swag/cmd/swag@latest
+	GOBIN=$(LOCAL_BIN) go install github.com/golang/mock/mockgen@latest
 .PHONY: bin-deps
 
-integration-test: ### run integration-test
+integration-test: ### UNIVERSAL: run integration-test
 	go clean -testcache && go test -v ./integration-test/...
 .PHONY: integration-test
 

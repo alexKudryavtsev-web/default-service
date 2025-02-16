@@ -27,7 +27,9 @@ Main commands:
 5) `make install-deps` - install tools (for development)
 6) `make migrate-create name="migration_name"` - create migration
 7) `make generate-docs` - generate Swagger-documentation
-8) `make integration-test` - run integration-test 
+8) `make integration-test` - run integration-test
+9) `make mock` - update mocks_test.go file
+10) `make test` - start all tests
 
 Documentation: /api/docs/index.html
 
@@ -83,6 +85,8 @@ Structure
 6) `make migrate-create name="migration_name"` - создать миграцию
 7) `make generate-docs` - сгенерировать Swagger-документацию. 
 8) `make integration-test` - запустить интеграционные тесты 
+9) `make mock` - обновить mocks_test.go файл
+10) `make test` - запустить все тесты
 
 Документация: /api/docs/index.html
 
