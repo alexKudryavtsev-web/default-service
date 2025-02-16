@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -8,7 +9,6 @@ import (
 	"github.com/alexKudryavtsev-web/default-service/internal/usecase"
 	"github.com/alexKudryavtsev-web/default-service/pkg/logger"
 	"github.com/gin-gonic/gin"
-	"github.com/pkg/errors"
 )
 
 type todosRoutes struct {
