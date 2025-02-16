@@ -1,0 +1,27 @@
+basePath: /api
+info:
+  contact: {}
+  description: default-service
+  title: alexKudryavtsev-web/default-service
+  version: "1.0"
+paths:
+  /healthz:
+    get:
+      operationId: healthz
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+      summary: Check server healthz
+      tags:
+      - common
+schemes:
+- https
+- http
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

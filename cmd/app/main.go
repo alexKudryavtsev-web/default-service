@@ -1,3 +1,13 @@
+// @title           alexKudryavtsev-web/default-service
+// @version         1.0
+// @description     default-service
+
+// @BasePath  /api
+// @schemes https http
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 package main
 
 import (
