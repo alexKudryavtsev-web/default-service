@@ -3,12 +3,12 @@ package app
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/alexKudryavtsev-web/default-service/config"
+	v1 "github.com/alexKudryavtsev-web/default-service/internal/controller/http/v1"
 	"github.com/alexKudryavtsev-web/default-service/pkg/httpserver"
 	"github.com/alexKudryavtsev-web/default-service/pkg/logger"
 	"github.com/alexKudryavtsev-web/default-service/pkg/postgres"
@@ -28,13 +28,10 @@ func Run(cfg *config.Config) {
 	}
 	defer pg.Close()
 
-	router := gin.Default()
+	handler := gin.New()
+	v1.NewRouter(handler)
 
-	router.GET("/ping", func(c *gin.Context) {
-		c.String(http.StatusOK, "pong")
-	})
-
-	httpServer := httpserver.New(router, httpserver.Port(cfg.HTTP.Port))
+	httpServer := httpserver.New(handler, httpserver.Port(cfg.HTTP.Port))
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
