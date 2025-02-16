@@ -9,6 +9,8 @@ import (
 
 	"github.com/alexKudryavtsev-web/default-service/config"
 	v1 "github.com/alexKudryavtsev-web/default-service/internal/controller/http/v1"
+	"github.com/alexKudryavtsev-web/default-service/internal/usecase"
+	"github.com/alexKudryavtsev-web/default-service/internal/usecase/repo"
 	"github.com/alexKudryavtsev-web/default-service/pkg/httpserver"
 	"github.com/alexKudryavtsev-web/default-service/pkg/logger"
 	"github.com/alexKudryavtsev-web/default-service/pkg/postgres"
@@ -28,8 +30,11 @@ func Run(cfg *config.Config) {
 	}
 	defer pg.Close()
 
+	todosRepo := repo.New(pg)
+	todosUseCase := usecase.NewTodosUseCase(todosRepo)
+
 	handler := gin.New()
-	v1.NewRouter(handler)
+	v1.NewRouter(handler, logger, todosUseCase)
 
 	httpServer := httpserver.New(handler, httpserver.Port(cfg.HTTP.Port))
 
