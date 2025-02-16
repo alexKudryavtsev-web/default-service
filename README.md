@@ -4,7 +4,9 @@
 
 - English
 - Русский
-- עִברִית
+<!-- - עִברִית -->
+
+---
 
 ### English 🇬🇧
 
@@ -24,6 +26,9 @@ Main commands:
 4) `make run-app` - run the application itself (for development), used with `make compose-up-dev`
 5) `make install-deps` - install tools (for development)
 6) `make migrate-create name="migration_name"` - create migration
+7) `make generate-docs` - generate Swagger-documentation. 
+
+Documentation: /api/docs/index.html
 
 Structure
 
@@ -75,6 +80,9 @@ Structure
 4) `make run-app` -  запусктить само приложение (для разработки), используется вместе с `make compose-up-dev`
 5) `make install-deps` - установить инструменты (для разработки)
 6) `make migrate-create name="migration_name"` - создать миграцию
+6) `make generate-docs` - сгенерировать Swagger-документацию. 
+
+Документация: /api/docs/index.html
 
 Структура:
 
@@ -106,7 +114,7 @@ Structure
     └── postgres
 ```
 
----
+<!-- ---
 
 ### עִברִית 🇮🇱
 
@@ -155,4 +163,4 @@ Structure
   ├── httpserver
   ├── logger
   └── postgres
-```
+``` -->
