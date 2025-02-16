@@ -41,5 +41,9 @@ install-deps: ### DEVELOPMENT: install deps
 	GOBIN=$(LOCAL_BIN) go install github.com/swaggo/swag/cmd/swag@latest
 .PHONY: bin-deps
 
+integration-test: ### run integration-test
+	go clean -testcache && go test -v ./integration-test/...
+.PHONY: integration-test
+
 build: ### UNIVERSAL: build the application
 	go build -tags migrate -o $(LOCAL_BIN)/app ./cmd/app

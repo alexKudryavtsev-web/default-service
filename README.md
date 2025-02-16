@@ -26,7 +26,8 @@ Main commands:
 4) `make run-app` - run the application itself (for development), used with `make compose-up-dev`
 5) `make install-deps` - install tools (for development)
 6) `make migrate-create name="migration_name"` - create migration
-7) `make generate-docs` - generate Swagger-documentation. 
+7) `make generate-docs` - generate Swagger-documentation
+8) `make integration-test` - run integration-test 
 
 Documentation: /api/docs/index.html
 
@@ -80,7 +81,8 @@ Structure
 4) `make run-app` -  запусктить само приложение (для разработки), используется вместе с `make compose-up-dev`
 5) `make install-deps` - установить инструменты (для разработки)
 6) `make migrate-create name="migration_name"` - создать миграцию
-6) `make generate-docs` - сгенерировать Swagger-документацию. 
+7) `make generate-docs` - сгенерировать Swagger-документацию. 
+8) `make integration-test` - запустить интеграционные тесты 
 
 Документация: /api/docs/index.html
 
