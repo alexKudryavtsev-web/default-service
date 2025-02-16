@@ -12,6 +12,7 @@ import (
 )
 
 var errInternalServErr = errors.New("internal server error")
+var errTodoNotFound = entity.ErrTodoNotFound
 
 type test struct {
 	name string
@@ -57,8 +58,6 @@ func TestTodos(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc
-
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -70,5 +69,89 @@ func TestTodos(t *testing.T) {
 			require.ErrorIs(t, err, tc.err)
 		})
 	}
+}
 
+func TestTodoByID(t *testing.T) {
+	t.Parallel()
+
+	todos, repo := todos(t)
+
+	tests := []struct {
+		name   string
+		todoID uint64
+		mock   func(uint64)
+		res    *entity.Todo
+		err    error
+	}{
+		{
+			name:   "todo found",
+			todoID: 1,
+			mock: func(id uint64) {
+				expectedTodo := &entity.Todo{ID: id, Task: "Test Task"}
+				repo.EXPECT().GetTodoByID(context.Background(), id).Return(expectedTodo, nil)
+			},
+			res: &entity.Todo{ID: 1, Task: "Test Task"},
+			err: nil,
+		},
+		{
+			name:   "todo not found",
+			todoID: 2,
+			mock: func(id uint64) {
+				repo.EXPECT().GetTodoByID(context.Background(), id).Return(nil, errTodoNotFound)
+			},
+			res: nil,
+			err: errTodoNotFound,
+		},
+		{
+			name:   "internal server error",
+			todoID: 3,
+			mock: func(id uint64) {
+				repo.EXPECT().GetTodoByID(context.Background(), id).Return(nil, errInternalServErr)
+			},
+			res: nil,
+			err: errInternalServErr,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			tc.mock(tc.todoID)
+
+			res, err := todos.TodoByID(context.Background(), tc.todoID)
+
+			require.Equal(t, res, tc.res)
+			require.ErrorIs(t, err, tc.err)
+		})
+	}
+}
+
+func TestSaveTodo(t *testing.T) {
+	t.Parallel()
+
+	todos, repo := todos(t)
+
+	tests := []test{
+		{
+			name: "successful save",
+			mock: func() {
+				repo.EXPECT().SaveTodo(context.Background(), "New Task").Return(nil)
+			},
+			res: nil,
+			err: nil,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			tc.mock()
+
+			err := todos.SaveTodo(context.Background(), "New Task")
+
+			require.ErrorIs(t, err, tc.err)
+		})
+	}
 }
